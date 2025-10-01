@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Husarion Sp. z o.o.
+// Copyright 2024 Husarion sp. z o.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,4 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "send_to_dock/send_to_dock_node.hpp" //?
+#include "send_to_dock/send_to_dock_node.hpp"
+
+int main(int argc, char **argv) {
+  rclcpp::init(argc, argv);
+
+  auto send_to_dock_node = std::make_shared<SendToDockNode>();
+
+  try {
+    rclcpp::spin(send_to_dock_node);
+  } catch (const std::runtime_error &err) {
+    std::cerr << "[send_to_dock] Caught exception: " << err.what() << std::endl;
+  }
+
+  std::cout << "[send_to_dock] Shutting down" << std::endl;
+  rclcpp::shutdown();
+  return 0;
+}
