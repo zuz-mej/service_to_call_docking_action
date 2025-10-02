@@ -14,8 +14,14 @@
 
 #include "send_to_dock/send_to_dock_node.hpp"
 
-void SendToDockNode::handle_service() {
-  std::cout << "Jesteśmy w metodzie handle service\n";
+void SendToDockNode::handle_service(
+    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+    std::shared_ptr<std_srvs::srv::SetBool::Response> response) {
+  if (!request->data) {
+    response->success = false;
+    response->message = "Rejected request";
+    return;
+  }
 
   // Prepare goal (parameters to action)
   auto goal_msg = DockRobot::Goal();
@@ -25,18 +31,18 @@ void SendToDockNode::handle_service() {
 
   // Send goal
   auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
-  // goal_options.result_callback = [this, response](const
-  // GoalHandleDockRobot::WrappedResult & result) {
-  //   if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
-  //     response->success = true;
-  //     response->message = "Dokowanie zakończone sukcesem.";
-  //     RCLCPP_INFO(this->get_logger(), "Akcja zakończona sukcesem.");
-  //   } else {
-  //     response->success = false;
-  //     response->message = "Błąd dokowania.";
-  //     RCLCPP_WARN(this->get_logger(), "Akcja zakończona błędem.");
-  //   }
-  // };
+  goal_options.result_callback =
+      [this, response](const GoalHandleDockRobot::WrappedResult &result) {
+        if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+          response->success = true;
+          response->message = "Docking succeeded";
+          RCLCPP_INFO(this->get_logger(), "Success! Robot is charging.");
+        } else {
+          response->success = false;
+          response->message = "Docking failed";
+          RCLCPP_WARN(this->get_logger(), "Docking failed!");
+        }
+      };
 
   dock_action_client_->async_send_goal(goal_msg, goal_options);
 }

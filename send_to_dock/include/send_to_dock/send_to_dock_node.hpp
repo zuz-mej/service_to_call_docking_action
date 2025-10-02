@@ -17,12 +17,13 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
+#include "std_srvs/srv/set_bool.hpp"
 #include <nav2_msgs/action/dock_robot.hpp>
 
 class SendToDockNode : public rclcpp::Node {
 public:
   using DockRobot = nav2_msgs::action::DockRobot;
-  // using GoalHandleDockRobot = rclcpp_action::ClientGoalHandle<DockRobot>;
+  using GoalHandleDockRobot = rclcpp_action::ClientGoalHandle<DockRobot>;
 
   SendToDockNode() : Node("send_to_dock_node") {
 
@@ -36,7 +37,14 @@ public:
       RCLCPP_INFO(get_logger(), "Waiting for action server DockRobot");
     }
 
-    handle_service();
+    // create service server SetBool
+    service_ = this->create_service<std_srvs::srv::SetBool>(
+        "send_robot_to_dock",
+        std::bind(&SendToDockNode::handle_service, this, std::placeholders::_1,
+                  std::placeholders::_2));
+
+    RCLCPP_INFO(this->get_logger(),
+                "Service server 'send_robot_to_dock' ready");
 
     this->declare_parameter<std::string>("example_param", "default_value");
     std::string example_param =
@@ -51,7 +59,11 @@ public:
 
 private:
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
-  void handle_service();
+  rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr service_;
+
+  void
+  handle_service(const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                 std::shared_ptr<std_srvs::srv::SetBool::Response> response);
 };
 
 #endif // SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
