@@ -6,6 +6,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(nav2_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -20,22 +23,20 @@ if(BUILD_TESTING)
 endif()
 
 # Install launch files
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-
-# Install config files
-install(DIRECTORY config DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME}/)
 
 find_package(rclcpp REQUIRED)
 
 # Add node send_to_dock_node
-add_executable(send_to_dock_node src/send_to_dock_node.cpp)
+add_executable(send_to_dock_node src/main.cpp src/send_to_dock_node.cpp)
 
 target_include_directories(
   send_to_dock_node
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:include>)
 
-ament_target_dependencies(send_to_dock_node "rclcpp")
+# ament_target_dependencies(send_to_dock_node "rclcpp")
+ament_target_dependencies(send_to_dock_node rclcpp rclcpp_action nav2_msgs)
 
 install(TARGETS send_to_dock_node DESTINATION lib/${PROJECT_NAME})
 

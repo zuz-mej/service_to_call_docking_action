@@ -12,26 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rclcpp/rclcpp.hpp"
+#include "send_to_dock/send_to_dock_node.hpp"
 
-class SendToDockNode : public rclcpp::Node {
-public:
-  SendToDockNode() : Node("send_to_dock_node") {
-    this->declare_parameter<std::string>("example_param", "default_value");
-    std::string example_param =
-        this->get_parameter("example_param").as_string();
-    RCLCPP_INFO(this->get_logger(),
-                "Declared parameter 'example_param'. Value: %s",
-                example_param.c_str());
+void SendToDockNode::handle_service() {
+  std::cout << "Jesteśmy w metodzie handle service\n";
 
-    RCLCPP_INFO(this->get_logger(), "Hello world from the C++ node %s",
-                "send_to_dock_node");
-  }
-};
+  // Prepare goal (parameters to action)
+  auto goal_msg = DockRobot::Goal();
+  goal_msg.dock_type = "charging_dock";
+  goal_msg.navigate_to_staging_pose = true;
+  goal_msg.dock_id = "main";
 
-int main(int argc, char *argv[]) {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<SendToDockNode>());
-  rclcpp::shutdown();
-  return 0;
+  // Send goal
+  auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
+  // goal_options.result_callback = [this, response](const
+  // GoalHandleDockRobot::WrappedResult & result) {
+  //   if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+  //     response->success = true;
+  //     response->message = "Dokowanie zakończone sukcesem.";
+  //     RCLCPP_INFO(this->get_logger(), "Akcja zakończona sukcesem.");
+  //   } else {
+  //     response->success = false;
+  //     response->message = "Błąd dokowania.";
+  //     RCLCPP_WARN(this->get_logger(), "Akcja zakończona błędem.");
+  //   }
+  // };
+
+  dock_action_client_->async_send_goal(goal_msg, goal_options);
 }
