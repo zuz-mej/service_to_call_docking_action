@@ -12,4 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "send_to_dock/send_to_dock_node.hpp" //?
+#include "send_to_dock/send_to_dock_node.hpp"
+
+void SendToDockNode::handle_service() {
+  std::cout << "Jesteśmy w metodzie handle service\n";
+}

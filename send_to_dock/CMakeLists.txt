@@ -28,7 +28,7 @@ install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME}/)
 find_package(rclcpp REQUIRED)
 
 # Add node send_to_dock_node
-add_executable(send_to_dock_node src/main.cpp)
+add_executable(send_to_dock_node src/main.cpp src/send_to_dock_node.cpp)
 
 target_include_directories(
   send_to_dock_node
