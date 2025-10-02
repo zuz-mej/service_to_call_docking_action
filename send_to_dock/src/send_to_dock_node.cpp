@@ -31,6 +31,14 @@ void SendToDockNode::handle_service(
 
   // Send goal
   auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
+
+  goal_options.feedback_callback =
+      [this](GoalHandleDockRobot::SharedPtr,
+             const std::shared_ptr<const DockRobot::Feedback> feedback) {
+        RCLCPP_INFO(this->get_logger(), "Feedback received: Robot is %d",
+                    feedback->state);
+      };
+
   goal_options.result_callback =
       [this, response](const GoalHandleDockRobot::WrappedResult &result) {
         if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {

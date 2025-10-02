@@ -15,10 +15,10 @@
 #ifndef SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
 #define SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
 
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
-#include "std_srvs/srv/set_bool.hpp"
 #include <nav2_msgs/action/dock_robot.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
+#include <std_srvs/srv/set_bool.hpp>
 
 class SendToDockNode : public rclcpp::Node {
 public:
@@ -45,16 +45,6 @@ public:
 
     RCLCPP_INFO(this->get_logger(),
                 "Service server 'send_robot_to_dock' ready");
-
-    this->declare_parameter<std::string>("example_param", "default_value");
-    std::string example_param =
-        this->get_parameter("example_param").as_string();
-    RCLCPP_INFO(this->get_logger(),
-                "Declared parameter 'example_param'. Value: %s",
-                example_param.c_str());
-
-    RCLCPP_INFO(this->get_logger(), "Hello world from the C++ node %s",
-                "send_to_dock_node");
   }
 
 private:
