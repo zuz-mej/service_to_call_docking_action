@@ -16,4 +16,27 @@
 
 void SendToDockNode::handle_service() {
   std::cout << "Jesteśmy w metodzie handle service\n";
+
+  // Prepare goal (parameters to action)
+  auto goal_msg = DockRobot::Goal();
+  goal_msg.dock_type = "charging_dock";
+  goal_msg.navigate_to_staging_pose = true;
+  goal_msg.dock_id = "main";
+
+  // Send goal
+  auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
+  // goal_options.result_callback = [this, response](const
+  // GoalHandleDockRobot::WrappedResult & result) {
+  //   if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
+  //     response->success = true;
+  //     response->message = "Dokowanie zakończone sukcesem.";
+  //     RCLCPP_INFO(this->get_logger(), "Akcja zakończona sukcesem.");
+  //   } else {
+  //     response->success = false;
+  //     response->message = "Błąd dokowania.";
+  //     RCLCPP_WARN(this->get_logger(), "Akcja zakończona błędem.");
+  //   }
+  // };
+
+  dock_action_client_->async_send_goal(goal_msg, goal_options);
 }
