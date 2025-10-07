@@ -1,4 +1,4 @@
-// Copyright 2024 Husarion sp. z o.o.
+// Copyright 2025 Husarion sp. z o.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
-#define SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
+#ifndef SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_
+#define SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_
 
-#include <nav2_msgs/action/dock_robot.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
+
+#include <nav2_msgs/action/dock_robot.hpp>
 #include <std_srvs/srv/set_bool.hpp>
 
 class SendToDockNode : public rclcpp::Node {
@@ -56,4 +57,4 @@ private:
                  std::shared_ptr<std_srvs::srv::SetBool::Response> response);
 };
 
-#endif // SERVICE_TO_CALL_DOCKING_ACTION_SEND_TO_DOCK_NODE_HPP_
+#endif // SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_

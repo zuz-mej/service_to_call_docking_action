@@ -101,3 +101,11 @@ repos:
         language: node
         types: [markdown]
         minimum_pre_commit_version: 0.15.0
+
+  - repo: local
+    hooks:
+      - id: header-guard-check
+        name: header guard check
+        entry: python3 .git/check_header_guards.py
+        language: system
+        files: \.hpp$
