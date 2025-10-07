@@ -12,23 +12,21 @@ find_package(nav2_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights comment the
-  # line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo) comment the line
-  # when this package is in a git repo and when a copyright and license is added
-  # to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test_send_to_dock_node
+                  test/test_send_to_dock_node.cpp src/send_to_dock_node.cpp)
+  target_include_directories(
+    ${PROJECT_NAME}_test_send_to_dock_node
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+           $<INSTALL_INTERFACE:include>)
+  ament_target_dependencies(${PROJECT_NAME}_test_send_to_dock_node rclcpp
+                            rclcpp_action nav2_msgs std_srvs)
 endif()
 
-# Install launch files
 install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME}/)
 
 find_package(rclcpp REQUIRED)
 
-# Add node send_to_dock_node
 add_executable(send_to_dock_node src/main.cpp src/send_to_dock_node.cpp)
 
 target_include_directories(
@@ -36,7 +34,6 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:include>)
 
-# ament_target_dependencies(send_to_dock_node "rclcpp")
 ament_target_dependencies(send_to_dock_node rclcpp rclcpp_action nav2_msgs
                           std_srvs)
 
