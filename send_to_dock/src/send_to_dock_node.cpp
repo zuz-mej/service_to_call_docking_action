@@ -33,42 +33,68 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
   RCLCPP_INFO(this->get_logger(), "Service server 'send_robot_to_dock' ready");
 }
 
+void SendToDockNode::feedback_callback(
+    GoalHandleDockRobot::SharedPtr,
+    const std::shared_ptr<const DockRobot::Feedback> feedback) {
+  RCLCPP_INFO(this->get_logger(), "Feedback received: Robot state = %d",
+              feedback->state);
+}
+
+void SendToDockNode::result_callback(
+    const GoalHandleDockRobot::WrappedResult &result) {
+  switch (result.code) {
+  case rclcpp_action::ResultCode::SUCCEEDED:
+    RCLCPP_INFO(this->get_logger(), "Docking succeeded! Robot is charging.");
+    break;
+  case rclcpp_action::ResultCode::ABORTED:
+    RCLCPP_WARN(this->get_logger(), "Docking aborted!");
+    break;
+  case rclcpp_action::ResultCode::CANCELED:
+    RCLCPP_WARN(this->get_logger(), "Docking canceled by user.");
+    break;
+  default:
+    RCLCPP_ERROR(this->get_logger(), "Unknown result code.");
+    break;
+  }
+  active_goal_.reset();
+}
+
 void SendToDockNode::handle_service(
     const std::shared_ptr<SetBoolSrv::Request> request,
     std::shared_ptr<SetBoolSrv::Response> response) {
-  if (!request->data) {
-    response->success = false;
-    response->message = "Rejected request";
-    return;
+
+  if (request->data) {
+    auto goal_msg = DockRobot::Goal();
+    goal_msg.dock_type = "charging_dock";
+    goal_msg.navigate_to_staging_pose = true;
+    goal_msg.dock_id = "main";
+
+    auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
+    goal_options.feedback_callback =
+        std::bind(&SendToDockNode::feedback_callback, this,
+                  std::placeholders::_1, std::placeholders::_2);
+
+    goal_options.result_callback = std::bind(&SendToDockNode::result_callback,
+                                             this, std::placeholders::_1);
+
+    auto future_goal_handle =
+        dock_action_client_->async_send_goal(goal_msg, goal_options);
+
+    // active_goal_ = future_goal_handle.get();   // blocking
+
+    response->success = true;
+    response->message = "Docking request sent.";
+  } else {
+    if (1) { // active_goal_     // segmentation fault
+      dock_action_client_->async_cancel_goal(active_goal_);
+      response->success = true;
+      response->message = "Docking canceled.";
+      RCLCPP_INFO(this->get_logger(), "Sent cancel request to action server.");
+    } else {
+      response->success = false;
+      response->message = "No active docking goal to cancel.";
+      RCLCPP_WARN(this->get_logger(), "No active goal to cancel.");
+    }
   }
-
-  auto goal_msg = DockRobot::Goal();
-  goal_msg.dock_type = "charging_dock";
-  goal_msg.navigate_to_staging_pose = true;
-  goal_msg.dock_id = "main";
-
-  auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
-
-  goal_options.feedback_callback =
-      [this](GoalHandleDockRobot::SharedPtr,
-             const std::shared_ptr<const DockRobot::Feedback> feedback) {
-        RCLCPP_INFO(this->get_logger(), "Feedback received: Robot is %d",
-                    feedback->state);
-      };
-
-  goal_options.result_callback =
-      [this, response](const GoalHandleDockRobot::WrappedResult &result) {
-        if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
-          response->success = true;
-          response->message = "Docking succeeded";
-          RCLCPP_INFO(this->get_logger(), "Success! Robot is charging.");
-        } else {
-          response->success = false;
-          response->message = "Docking failed";
-          RCLCPP_WARN(this->get_logger(), "Docking failed!");
-        }
-      };
-
-  dock_action_client_->async_send_goal(goal_msg, goal_options);
 }
 } // namespace send_to_dock
