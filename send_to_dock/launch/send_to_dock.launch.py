@@ -13,28 +13,51 @@
 # limitations under the License.
 
 
-import os
-
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import (
+    EnvironmentVariable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+)
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    config = os.path.join(
-        get_package_share_directory("send_to_dock"),
-        "config",
-        "service_to_call_docking_action_params.yaml",
+    namespace = LaunchConfiguration("namespace")
+    declare_namespace_arg = DeclareLaunchArgument(
+        "namespace",
+        default_value=EnvironmentVariable("ROBOT_NAMESPACE", default_value=""),  # panther
+        description="Add namespace to all launched nodes",
     )
 
-    return LaunchDescription(
-        [
-            Node(
-                package="send_to_dock",
-                executable="send_to_dock_node",
-                name="send_to_dock_node",
-                output="screen",
-                parameters=[config],
-            ),
-        ]
+    send_to_dock_config_path = LaunchConfiguration("send_to_dock_config_path")
+    declare_send_to_dock_config_path = DeclareLaunchArgument(
+        "send_to_dock_config_path",
+        default_value=PathJoinSubstitution(
+            [
+                FindPackageShare("send_to_dock"),
+                "config",
+                "send_to_dock.yaml",
+            ]
+        ),
+        description="Specify path to configuration file for docking",
     )
+
+    send_to_dock_node = Node(
+        package="send_to_dock",
+        executable="send_to_dock_node",
+        name="send_to_dock_node",
+        parameters=[send_to_dock_config_path],
+        namespace=namespace,
+        # remappings=[("/diagnostics", "diagnostics")],
+    )
+
+    actions = [
+        declare_namespace_arg,
+        declare_send_to_dock_config_path,
+        send_to_dock_node,
+    ]
+
+    return LaunchDescription(actions)

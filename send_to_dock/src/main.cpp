@@ -17,7 +17,7 @@
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
-  auto send_to_dock_node = std::make_shared<SendToDockNode>();
+  auto send_to_dock_node = std::make_shared<send_to_dock::SendToDockNode>();
 
   try {
     rclcpp::spin(send_to_dock_node);

@@ -14,22 +14,39 @@
 
 #include "send_to_dock/send_to_dock_node.hpp"
 
+namespace send_to_dock {
+
+SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
+  dock_action_client_ =
+      rclcpp_action::create_client<DockRobot>(this, "/panther/dock_robot");
+
+  while (
+      !dock_action_client_->wait_for_action_server(std::chrono::seconds(2))) {
+    RCLCPP_INFO(get_logger(), "Waiting for action server DockRobot");
+  }
+
+  service_ = this->create_service<SetBoolSrv>(
+      "send_robot_to_dock",
+      std::bind(&SendToDockNode::handle_service, this, std::placeholders::_1,
+                std::placeholders::_2));
+
+  RCLCPP_INFO(this->get_logger(), "Service server 'send_robot_to_dock' ready");
+}
+
 void SendToDockNode::handle_service(
-    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
-    std::shared_ptr<std_srvs::srv::SetBool::Response> response) {
+    const std::shared_ptr<SetBoolSrv::Request> request,
+    std::shared_ptr<SetBoolSrv::Response> response) {
   if (!request->data) {
     response->success = false;
     response->message = "Rejected request";
     return;
   }
 
-  // Prepare goal (parameters to action)
   auto goal_msg = DockRobot::Goal();
   goal_msg.dock_type = "charging_dock";
   goal_msg.navigate_to_staging_pose = true;
   goal_msg.dock_id = "main";
 
-  // Send goal
   auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
 
   goal_options.feedback_callback =
@@ -54,3 +71,4 @@ void SendToDockNode::handle_service(
 
   dock_action_client_->async_send_goal(goal_msg, goal_options);
 }
+} // namespace send_to_dock
