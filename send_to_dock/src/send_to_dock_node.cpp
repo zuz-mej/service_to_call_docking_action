@@ -40,8 +40,9 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
 void SendToDockNode::feedback_callback(
     GoalHandleDockRobot::SharedPtr,
     const std::shared_ptr<const DockRobot::Feedback> feedback) {
-  RCLCPP_INFO(this->get_logger(), "Feedback received: Robot state = %d",
-              feedback->state);
+
+  RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
+                       "Feedback received: Robot state = %d", feedback->state);
 }
 
 void SendToDockNode::result_callback(
