@@ -43,6 +43,8 @@ private:
 
   void result_callback(const GoalHandleDockRobot::WrappedResult &result);
 
+  void goal_response_callback(GoalHandleDockRobot::SharedPtr goal_handle);
+
   void handle_service(const std::shared_ptr<SetBoolSrv::Request> request,
                       std::shared_ptr<SetBoolSrv::Response> response);
 };

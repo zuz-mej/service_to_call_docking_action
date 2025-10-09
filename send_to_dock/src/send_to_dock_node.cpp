@@ -59,41 +59,60 @@ void SendToDockNode::result_callback(
   active_goal_.reset();
 }
 
+void SendToDockNode::goal_response_callback(
+    GoalHandleDockRobot::SharedPtr goal_handle) {
+  if (!goal_handle) {
+    RCLCPP_ERROR(this->get_logger(), "Goal rejected by the server");
+  } else {
+    RCLCPP_INFO(this->get_logger(), "Goal accepted by the server");
+    active_goal_ = goal_handle;
+  }
+}
+
 void SendToDockNode::handle_service(
     const std::shared_ptr<SetBoolSrv::Request> request,
     std::shared_ptr<SetBoolSrv::Response> response) {
 
   if (request->data) {
-    auto goal_msg = DockRobot::Goal();
-    goal_msg.dock_type = "charging_dock";
-    goal_msg.navigate_to_staging_pose = true;
-    goal_msg.dock_id = "main";
+    if (active_goal_) {
+      response->success = true; // Set to true after receiving every request for
+                                // proper functioning of Vizanti buttons
+      response->message = "Docking goal already exists.";
+      RCLCPP_WARN(this->get_logger(), "Docking goal already exists.");
+      return;
+    } else {
+      auto goal_msg = DockRobot::Goal();
+      goal_msg.dock_type = "charging_dock";
+      goal_msg.navigate_to_staging_pose = true;
+      goal_msg.dock_id = "main";
 
-    auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
-    goal_options.feedback_callback =
-        std::bind(&SendToDockNode::feedback_callback, this,
-                  std::placeholders::_1, std::placeholders::_2);
+      auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
 
-    goal_options.result_callback = std::bind(&SendToDockNode::result_callback,
-                                             this, std::placeholders::_1);
+      goal_options.feedback_callback =
+          std::bind(&SendToDockNode::feedback_callback, this,
+                    std::placeholders::_1, std::placeholders::_2);
 
-    auto future_goal_handle =
-        dock_action_client_->async_send_goal(goal_msg, goal_options);
+      goal_options.result_callback = std::bind(&SendToDockNode::result_callback,
+                                               this, std::placeholders::_1);
 
-    // active_goal_ = future_goal_handle.get();   // blocking
+      goal_options.goal_response_callback = std::bind(
+          &SendToDockNode::goal_response_callback, this, std::placeholders::_1);
 
-    response->success = true;
-    response->message = "Docking request sent.";
+      dock_action_client_->async_send_goal(goal_msg, goal_options);
+      response->success = true;
+      response->message = "New docking goal request sent.";
+      RCLCPP_WARN(this->get_logger(), "New docking goal request sent.");
+    }
   } else {
-    if (1) { // active_goal_     // segmentation fault
+    if (active_goal_) {
       dock_action_client_->async_cancel_goal(active_goal_);
       response->success = true;
       response->message = "Docking canceled.";
-      RCLCPP_INFO(this->get_logger(), "Sent cancel request to action server.");
+      RCLCPP_WARN(this->get_logger(), "Docking canceled.");
     } else {
-      response->success = false;
+      response->success = true;
       response->message = "No active docking goal to cancel.";
-      RCLCPP_WARN(this->get_logger(), "No active goal to cancel.");
+      RCLCPP_WARN(this->get_logger(), "No active docking goal to cancel.");
     }
   }
 }
