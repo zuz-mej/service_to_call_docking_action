@@ -29,11 +29,6 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
   dock_action_client_ =
       rclcpp_action::create_client<DockRobot>(this, "/panther/dock_robot");
 
-  while (
-      !dock_action_client_->wait_for_action_server(std::chrono::seconds(2))) {
-    RCLCPP_INFO(get_logger(), "Waiting for action server DockRobot");
-  }
-
   service_ = this->create_service<SetBoolSrv>(
       "send_robot_to_dock",
       std::bind(&SendToDockNode::handle_service, this, std::placeholders::_1,
@@ -81,6 +76,16 @@ void SendToDockNode::goal_response_callback(
 void SendToDockNode::handle_service(
     const std::shared_ptr<SetBoolSrv::Request> request,
     std::shared_ptr<SetBoolSrv::Response> response) {
+
+  if (!this->dock_action_client_->wait_for_action_server(
+          std::chrono::seconds(2))) {
+    RCLCPP_ERROR(this->get_logger(),
+                 "Action server is not available after waiting");
+    response->success = false;
+    response->message = "Action server is not available";
+    rclcpp::shutdown();
+    return;
+  }
 
   if (request->data) {
     if (active_goal_) {
