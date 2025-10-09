@@ -17,6 +17,15 @@
 namespace send_to_dock {
 
 SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
+
+  this->declare_parameter("dock_type", "charging_dock");
+  this->declare_parameter("navigate_to_staging_pose", true);
+  this->declare_parameter("dock_id", "main");
+
+  this->get_parameter("dock_type", dock_type_);
+  this->get_parameter("navigate_to_staging_pose", navigate_to_staging_pose_);
+  this->get_parameter("dock_id", dock_id_);
+
   dock_action_client_ =
       rclcpp_action::create_client<DockRobot>(this, "/panther/dock_robot");
 
@@ -82,9 +91,9 @@ void SendToDockNode::handle_service(
       return;
     } else {
       auto goal_msg = DockRobot::Goal();
-      goal_msg.dock_type = "charging_dock";
-      goal_msg.navigate_to_staging_pose = true;
-      goal_msg.dock_id = "main";
+      goal_msg.dock_type = dock_type_;
+      goal_msg.navigate_to_staging_pose = navigate_to_staging_pose_;
+      goal_msg.dock_id = dock_id_;
 
       auto goal_options = rclcpp_action::Client<DockRobot>::SendGoalOptions();
 

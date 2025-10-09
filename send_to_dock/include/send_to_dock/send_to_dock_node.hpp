@@ -36,6 +36,9 @@ private:
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
   rclcpp::Service<SetBoolSrv>::SharedPtr service_;
   GoalHandleDockRobot::SharedPtr active_goal_;
+  std::string dock_type_;
+  bool navigate_to_staging_pose_;
+  std::string dock_id_;
 
   void
   feedback_callback(GoalHandleDockRobot::SharedPtr,
