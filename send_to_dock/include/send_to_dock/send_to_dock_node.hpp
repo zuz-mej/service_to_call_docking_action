@@ -25,31 +25,35 @@
 
 namespace send_to_dock {
 using SetBoolSrv = std_srvs::srv::SetBool;
+using DockRobot = nav2_msgs::action::DockRobot;
+using GoalHandleDockRobot = rclcpp_action::ClientGoalHandle<DockRobot>;
+using SendGoalOptions = rclcpp_action::Client<DockRobot>::SendGoalOptions;
 
 class SendToDockNode : public rclcpp::Node {
 public:
   SendToDockNode();
-  using DockRobot = nav2_msgs::action::DockRobot;
-  using GoalHandleDockRobot = rclcpp_action::ClientGoalHandle<DockRobot>;
 
 private:
+  void
+  FeedbackCallback(GoalHandleDockRobot::SharedPtr,
+                   const std::shared_ptr<const DockRobot::Feedback> feedback);
+
+  void ResultCallback(const GoalHandleDockRobot::WrappedResult &result);
+
+  void GoalResponseCallback(GoalHandleDockRobot::SharedPtr goal_handle);
+
+  DockRobot::Goal CreateGoalMsg();
+  SendGoalOptions CreateGoalOptions();
+
+  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
+                     std::shared_ptr<SetBoolSrv::Response> response);
+
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
   rclcpp::Service<SetBoolSrv>::SharedPtr service_;
   GoalHandleDockRobot::SharedPtr active_goal_;
   std::string dock_type_;
   bool navigate_to_staging_pose_;
   std::string dock_id_;
-
-  void
-  feedback_callback(GoalHandleDockRobot::SharedPtr,
-                    const std::shared_ptr<const DockRobot::Feedback> feedback);
-
-  void result_callback(const GoalHandleDockRobot::WrappedResult &result);
-
-  void goal_response_callback(GoalHandleDockRobot::SharedPtr goal_handle);
-
-  void handle_service(const std::shared_ptr<SetBoolSrv::Request> request,
-                      std::shared_ptr<SetBoolSrv::Response> response);
 };
 } // namespace send_to_dock
 #endif // SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_

@@ -18,13 +18,13 @@ Node `send_to_dock_node` creates service server SetBool `send_robot_to_dock` and
 
 **Service server**
 
-* `send_robot_to_dock` [std_srvs/SetBool]: Receives requests for docking or stopping the docking action.
+* `send_robot_to_dock` [*std_srvs/SetBool*]: Receives requests for docking or stopping the docking action.
   * If *std_srvs/SetBool: true* then the node sends request of docking with specified parameters to the action client.
   * If *std_srvs/SetBool: false* then the node sends request of cancelling current docking action.
 
 **Action client**
 
-* `dock_robot` [nav2_msgs/DockRobot]: Docks robot or stops docking depending on the request sent by the service server `send_robot_to_dock`.
+* `dock_robot` [*nav2_msgs/DockRobot*]: Docks robot or stops docking depending on the request sent by the service server `send_robot_to_dock`.
 
 **Parameters**
 

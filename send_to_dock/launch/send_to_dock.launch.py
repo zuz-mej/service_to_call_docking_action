@@ -42,7 +42,7 @@ def generate_launch_description():
                 "send_to_dock.yaml",
             ]
         ),
-        description="Specify path to configuration file for docking",
+        description="Specify path to configuration file for send robot to dock service",
     )
 
     send_to_dock_node = Node(
@@ -51,6 +51,7 @@ def generate_launch_description():
         name="send_to_dock_node",
         parameters=[send_to_dock_config_path],
         namespace=namespace,
+        emulate_tty=True,
     )
 
     actions = [
