@@ -91,17 +91,6 @@ repos:
       - id: prettier-package-xml
       - id: sort-package-xml
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.43.0
-    hooks:
-      - id: markdownlint-fix
-        name: markdownlint-fix
-        description: "Fixes the style of Markdown/Commonmark files."
-        entry: markdownlint --fix
-        language: node
-        types: [markdown]
-        minimum_pre_commit_version: 0.15.0
-
   - repo: local
     hooks:
       - id: header-guard-check
