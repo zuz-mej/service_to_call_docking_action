@@ -55,7 +55,7 @@ void SendToDockNode::ResultCallback(
     RCLCPP_WARN(this->get_logger(), "Docking aborted!");
     break;
   case rclcpp_action::ResultCode::CANCELED:
-    RCLCPP_WARN(this->get_logger(), "Docking canceled by user.");
+    RCLCPP_INFO(this->get_logger(), "Docking canceled by user.");
     break;
   default:
     RCLCPP_ERROR(this->get_logger(), "Unknown result code.");
@@ -127,7 +127,7 @@ void SendToDockNode::HandleService(
     dock_action_client_->async_send_goal(goal_msg, goal_options);
     response->success = true;
     response->message = "New docking goal request sent.";
-    RCLCPP_WARN(this->get_logger(), "New docking goal request sent.");
+    RCLCPP_INFO(this->get_logger(), "New docking goal request sent.");
     return;
   }
 
@@ -135,7 +135,7 @@ void SendToDockNode::HandleService(
     dock_action_client_->async_cancel_goal(active_goal_);
     response->success = true;
     response->message = "Docking canceled.";
-    RCLCPP_WARN(this->get_logger(), "Docking canceled.");
+    RCLCPP_INFO(this->get_logger(), "Docking canceled.");
     return;
   }
   response->success = true;
