@@ -27,7 +27,7 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
   this->get_parameter("dock_id", dock_id_);
 
   dock_action_client_ =
-      rclcpp_action::create_client<DockRobot>(this, "/panther/dock_robot");
+      rclcpp_action::create_client<DockRobot>(this, "dock_robot");
 
   service_ = this->create_service<SetBoolSrv>(
       "send_robot_to_dock",

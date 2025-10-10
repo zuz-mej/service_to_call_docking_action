@@ -28,7 +28,7 @@ def generate_launch_description():
     namespace = LaunchConfiguration("namespace")
     declare_namespace_arg = DeclareLaunchArgument(
         "namespace",
-        default_value=EnvironmentVariable("ROBOT_NAMESPACE", default_value=""),  # panther
+        default_value=EnvironmentVariable("ROBOT_NAMESPACE", default_value="panther"),
         description="Add namespace to all launched nodes",
     )
 
@@ -51,7 +51,6 @@ def generate_launch_description():
         name="send_to_dock_node",
         parameters=[send_to_dock_config_path],
         namespace=namespace,
-        # remappings=[("/diagnostics", "diagnostics")],
     )
 
     actions = [
