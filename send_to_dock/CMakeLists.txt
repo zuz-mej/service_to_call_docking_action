@@ -5,30 +5,14 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(nav2_msgs REQUIRED)
-find_package(std_srvs REQUIRED)
+set(PACKAGE_DEPENDENCIES ament_cmake rclcpp rclcpp_action nav2_msgs std_srvs)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights comment the
-  # line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo) comment the line
-  # when this package is in a git repo and when a copyright and license is added
-  # to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+foreach(PACKAGE IN ITEMS ${PACKAGE_DEPENDENCIES})
+  find_package(${PACKAGE} REQUIRED)
+endforeach()
 
-# Install launch files
 install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME}/)
 
-find_package(rclcpp REQUIRED)
-
-# Add node send_to_dock_node
 add_executable(send_to_dock_node src/main.cpp src/send_to_dock_node.cpp)
 
 target_include_directories(
@@ -36,9 +20,7 @@ target_include_directories(
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:include>)
 
-# ament_target_dependencies(send_to_dock_node "rclcpp")
-ament_target_dependencies(send_to_dock_node rclcpp rclcpp_action nav2_msgs
-                          std_srvs)
+ament_target_dependencies(send_to_dock_node ${PACKAGE_DEPENDENCIES})
 
 install(TARGETS send_to_dock_node DESTINATION lib/${PROJECT_NAME})
 

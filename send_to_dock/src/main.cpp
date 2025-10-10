@@ -1,4 +1,4 @@
-// Copyright 2024 Husarion sp. z o.o.
+// Copyright 2025 Husarion sp. z o.o.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
-  auto send_to_dock_node = std::make_shared<SendToDockNode>();
+  auto send_to_dock_node = std::make_shared<send_to_dock::SendToDockNode>();
 
   try {
     rclcpp::spin(send_to_dock_node);
