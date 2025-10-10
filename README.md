@@ -24,7 +24,7 @@ Node `send_to_dock_node` creates service server SetBool `send_robot_to_dock` and
 
 **Action client**
 
-* `panther/dock_robot` [nav2_msgs/DockRobot]: Docks robot or stops docking depending on the request sent by the service server `send_robot_to_dock`.
+* `dock_robot` [nav2_msgs/DockRobot]: Docks robot or stops docking depending on the request sent by the service server `send_robot_to_dock`.
 
 **Parameters**
 
