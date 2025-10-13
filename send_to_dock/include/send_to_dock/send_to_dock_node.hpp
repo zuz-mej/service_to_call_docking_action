@@ -45,15 +45,16 @@ private:
   DockRobot::Goal CreateGoalMsg();
   SendGoalOptions CreateGoalOptions();
 
-  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
-                     std::shared_ptr<SetBoolSrv::Response> response);
-
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
   rclcpp::Service<SetBoolSrv>::SharedPtr service_;
-  GoalHandleDockRobot::SharedPtr active_goal_;
   std::string dock_type_;
   bool navigate_to_staging_pose_;
   std::string dock_id_;
+
+public:
+  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
+                     std::shared_ptr<SetBoolSrv::Response> response);
+  GoalHandleDockRobot::SharedPtr active_goal_;
 };
 } // namespace send_to_dock
 #endif // SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_
