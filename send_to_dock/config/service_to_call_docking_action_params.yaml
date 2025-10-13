@@ -1,3 +1,0 @@
-send_to_dock_node:
-  ros__parameters:
-    example_param: "abc"
