@@ -132,7 +132,6 @@ void SendToDockNode::HandleService(
   }
 
   if (active_goal_) {
-    // dock_action_client_->async_cancel_goal(active_goal_);
     dock_action_client_->async_cancel_all_goals();
     response->success = true;
     response->message = "Docking canceled.";
