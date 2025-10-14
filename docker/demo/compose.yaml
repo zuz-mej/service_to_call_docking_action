@@ -1,0 +1,17 @@
+x-common-config: &common-config
+  network_mode: host
+  ipc: host
+  environment:
+    - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+services:
+  send_to_dock:
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    container_name: send_to_dock
+    <<: *common-config
+    volumes:
+      - ../../send_to_dock/config:/config
+    command: >
+      ros2 run send_to_dock send_to_dock_node --ros-args -r __ns:=/panther
