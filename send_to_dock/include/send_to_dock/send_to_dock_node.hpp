@@ -33,15 +33,17 @@ class SendToDockNode : public rclcpp::Node {
 public:
   SendToDockNode();
 
+protected:
+  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
+                     std::shared_ptr<SetBoolSrv::Response> response);
+  GoalHandleDockRobot::SharedPtr active_goal_;
+
 private:
   void
   FeedbackCallback(GoalHandleDockRobot::SharedPtr,
                    const std::shared_ptr<const DockRobot::Feedback> feedback);
-
   void ResultCallback(const GoalHandleDockRobot::WrappedResult &result);
-
   void GoalResponseCallback(GoalHandleDockRobot::SharedPtr goal_handle);
-
   DockRobot::Goal CreateGoalMsg();
   SendGoalOptions CreateGoalOptions();
 
@@ -50,11 +52,6 @@ private:
   std::string dock_type_;
   bool navigate_to_staging_pose_;
   std::string dock_id_;
-
-public:
-  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
-                     std::shared_ptr<SetBoolSrv::Response> response);
-  GoalHandleDockRobot::SharedPtr active_goal_;
 };
 } // namespace send_to_dock
 #endif // SEND_TO_DOCK_SEND_TO_DOCK_SEND_TO_DOCK_NODE_HPP_
