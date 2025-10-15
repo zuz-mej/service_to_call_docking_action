@@ -14,4 +14,5 @@ services:
     volumes:
       - ../../send_to_dock/config:/config
     command: >
-      ros2 run send_to_dock send_to_dock_node --ros-args -r __ns:=/panther
+      ros2 launch send_to_dock send_to_dock.launch.py
+        namespace:=panther
