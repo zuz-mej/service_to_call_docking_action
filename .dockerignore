@@ -1,6 +1,0 @@
-build/
-install/
-log/
-docker/
-*.pyc
-__pycache__/
