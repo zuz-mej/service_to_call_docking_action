@@ -29,7 +29,8 @@ using SetBoolSrv = std_srvs::srv::SetBool;
 
 class SendToDockNodeWrapper : public send_to_dock::SendToDockNode {
 public:
-  SendToDockNodeWrapper() {};
+  SendToDockNodeWrapper()
+      : send_to_dock::SendToDockNode("test_send_to_dock") {};
 
   void HandleService(const SetBoolSrv::Request::SharedPtr request,
                      SetBoolSrv::Response::SharedPtr response) {
