@@ -39,7 +39,7 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
 
 void SendToDockNode::FeedbackCallback(
     GoalHandleDockRobot::SharedPtr,
-    const std::shared_ptr<const DockRobot::Feedback> feedback) {
+    const DockRobot::Feedback::ConstSharedPtr feedback) {
 
   RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
                        "Feedback received: dock state = %d", feedback->state);
@@ -100,9 +100,8 @@ SendGoalOptions SendToDockNode::CreateGoalOptions() {
   return goal_options;
 }
 
-void SendToDockNode::HandleService(
-    const std::shared_ptr<SetBoolSrv::Request> request,
-    std::shared_ptr<SetBoolSrv::Response> response) {
+void SendToDockNode::HandleService(const SetBoolSrv::Request::SharedPtr request,
+                                   SetBoolSrv::Response::SharedPtr response) {
 
   if (!this->dock_action_client_->wait_for_action_server(
           std::chrono::seconds(2))) {

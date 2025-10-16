@@ -34,14 +34,13 @@ public:
   SendToDockNode();
 
 protected:
-  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
-                     std::shared_ptr<SetBoolSrv::Response> response);
+  void HandleService(const SetBoolSrv::Request::SharedPtr request,
+                     SetBoolSrv::Response::SharedPtr response);
   GoalHandleDockRobot::SharedPtr active_goal_;
 
 private:
-  void
-  FeedbackCallback(GoalHandleDockRobot::SharedPtr,
-                   const std::shared_ptr<const DockRobot::Feedback> feedback);
+  void FeedbackCallback(GoalHandleDockRobot::SharedPtr,
+                        const DockRobot::Feedback::ConstSharedPtr feedback);
   void ResultCallback(const GoalHandleDockRobot::WrappedResult &result);
   void GoalResponseCallback(GoalHandleDockRobot::SharedPtr goal_handle);
   DockRobot::Goal CreateGoalMsg();

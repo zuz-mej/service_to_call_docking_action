@@ -31,14 +31,14 @@ class SendToDockNodeWrapper : public send_to_dock::SendToDockNode {
 public:
   SendToDockNodeWrapper() {};
 
-  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
-                     std::shared_ptr<SetBoolSrv::Response> response) {
+  void HandleService(const SetBoolSrv::Request::SharedPtr request,
+                     SetBoolSrv::Response::SharedPtr response) {
     return send_to_dock::SendToDockNode::HandleService(request, response);
   }
 
   void SetActiveGoal() {
     send_to_dock::SendToDockNode::active_goal_ =
-        std::shared_ptr<ClientGoalHandleDockRobot>(
+        ClientGoalHandleDockRobot::SharedPtr(
             reinterpret_cast<ClientGoalHandleDockRobot *>(0x1), [](auto *) {});
   }
 };
@@ -48,8 +48,8 @@ protected:
   TestSendToDockNode();
   rclcpp_action::Server<DockRobot>::SharedPtr CreateDockServer();
   std::shared_ptr<SendToDockNodeWrapper> node_;
-  std::shared_ptr<SetBoolSrv::Request> request_;
-  std::shared_ptr<SetBoolSrv::Response> response_;
+  SetBoolSrv::Request::SharedPtr request_;
+  SetBoolSrv::Response::SharedPtr response_;
   rclcpp_action::Server<DockRobot>::SharedPtr action_server_;
 };
 
@@ -65,8 +65,7 @@ TestSendToDockNode::CreateDockServer() {
   return rclcpp_action::create_server<DockRobot>(
       node_, "dock_robot",
       // handle_goal
-      [](const rclcpp_action::GoalUUID &,
-         std::shared_ptr<const DockRobot::Goal>) {
+      [](const rclcpp_action::GoalUUID &, DockRobot::Goal::ConstSharedPtr) {
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
       },
       // handle_cancel
