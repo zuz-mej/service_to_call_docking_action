@@ -36,9 +36,6 @@ public:
 protected:
   void HandleService(const SetBoolSrv::Request::SharedPtr request,
                      SetBoolSrv::Response::SharedPtr response);
-  GoalHandleDockRobot::SharedPtr active_goal_;
-
-private:
   void FeedbackCallback(GoalHandleDockRobot::SharedPtr,
                         const DockRobot::Feedback::ConstSharedPtr feedback);
   void ResultCallback(const GoalHandleDockRobot::WrappedResult &result);
@@ -46,6 +43,7 @@ private:
   DockRobot::Goal CreateGoalMsg();
   SendGoalOptions CreateGoalOptions();
 
+  GoalHandleDockRobot::SharedPtr active_goal_;
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
   rclcpp::Service<SetBoolSrv>::SharedPtr service_;
   std::string dock_type_;
