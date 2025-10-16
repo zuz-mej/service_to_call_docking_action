@@ -80,13 +80,13 @@ TestSendToDockNode::CreateDockServer() {
       });
 }
 
-TEST_F(TestSendToDockNode, DockServerIsNotCreated) {
+TEST_F(TestSendToDockNode, DockRobotActionServerNotAvailable) {
   node_->HandleService(request_, response_);
   ASSERT_FALSE(response_->success);
   EXPECT_EQ(response_->message, "Docking action server is not available");
 }
 
-TEST_F(TestSendToDockNode, DockServerCreatedAndTrueRequest) {
+TEST_F(TestSendToDockNode, DockServerSendDockGoal) {
   action_server_ = CreateDockServer();
   request_->data = true;
   node_->HandleService(request_, response_);
@@ -94,7 +94,7 @@ TEST_F(TestSendToDockNode, DockServerCreatedAndTrueRequest) {
   EXPECT_EQ(response_->message, "New docking goal request sent.");
 }
 
-TEST_F(TestSendToDockNode, DockServerCreatedAndFalseRequest) {
+TEST_F(TestSendToDockNode, DockServerNoGoalToCancel) {
   action_server_ = CreateDockServer();
   request_->data = false;
   node_->HandleService(request_, response_);
@@ -102,7 +102,7 @@ TEST_F(TestSendToDockNode, DockServerCreatedAndFalseRequest) {
   EXPECT_EQ(response_->message, "No active docking goal to cancel.");
 }
 
-TEST_F(TestSendToDockNode, DockRobotTrueRequestAndExistingGoal) {
+TEST_F(TestSendToDockNode, DockServerGoalAlreadyActive) {
   action_server_ = CreateDockServer();
   node_->SetActiveGoal();
   request_->data = true;
@@ -111,7 +111,7 @@ TEST_F(TestSendToDockNode, DockRobotTrueRequestAndExistingGoal) {
   EXPECT_EQ(response_->message, "Docking goal already exists.");
 }
 
-TEST_F(TestSendToDockNode, DockRobotFalseRequestAndExistingGoal) {
+TEST_F(TestSendToDockNode, DockServerCancelDockGoal) {
   action_server_ = CreateDockServer();
   node_->SetActiveGoal();
   request_->data = false;
