@@ -37,6 +37,10 @@ public:
     return send_to_dock::SendToDockNode::HandleService(request, response);
   }
 
+  ClientGoalHandleDockRobot::SharedPtr GetActiveGoal() {
+    return send_to_dock::SendToDockNode::active_goal_;
+  }
+
   void SetActiveGoal() {
     send_to_dock::SendToDockNode::active_goal_ =
         ClientGoalHandleDockRobot::SharedPtr(
@@ -105,10 +109,13 @@ TEST_F(TestSendToDockNode, DockServerNoGoalToCancel) {
 TEST_F(TestSendToDockNode, DockServerGoalAlreadyActive) {
   action_server_ = CreateDockServer();
   node_->SetActiveGoal();
+  auto initial_active_goal = node_->GetActiveGoal();
   request_->data = true;
   node_->HandleService(request_, response_);
+  auto active_goal_after_request = node_->GetActiveGoal();
   ASSERT_TRUE(response_->success);
   EXPECT_EQ(response_->message, "Docking goal already exists.");
+  EXPECT_EQ(initial_active_goal, active_goal_after_request);
 }
 
 TEST_F(TestSendToDockNode, DockServerCancelDockGoal) {
