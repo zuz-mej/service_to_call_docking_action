@@ -16,8 +16,9 @@
 
 namespace send_to_dock {
 
-SendToDockNode::SendToDockNode(const std::string &node_name)
-    : rclcpp::Node(node_name) {
+SendToDockNode::SendToDockNode(const std::string &node_name,
+                               const rclcpp::NodeOptions &options)
+    : rclcpp::Node(node_name, options) {
 
   this->declare_parameter("dock_type", "charging_dock");
   this->declare_parameter("navigate_to_staging_pose", true);

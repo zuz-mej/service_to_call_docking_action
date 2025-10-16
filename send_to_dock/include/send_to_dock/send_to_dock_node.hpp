@@ -31,7 +31,8 @@ using SendGoalOptions = rclcpp_action::Client<DockRobot>::SendGoalOptions;
 
 class SendToDockNode : public rclcpp::Node {
 public:
-  SendToDockNode(const std::string &node_name = "send_to_dock_node");
+  SendToDockNode(const std::string &node_name = "send_to_dock_node",
+                 const rclcpp::NodeOptions &options = rclcpp::NodeOptions());
 
 protected:
   void HandleService(const SetBoolSrv::Request::SharedPtr request,
