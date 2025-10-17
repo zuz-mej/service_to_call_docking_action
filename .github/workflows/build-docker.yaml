@@ -74,8 +74,8 @@ jobs:
           dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
           dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
           dockerfile: docker/Dockerfile
-          main_branch_name: ros2
-          repo_name: husarion-ugv-autonomy
+          main_branch_name: main
+          repo_name: send-to-dock
           build_type: ${{ inputs.build_type }}
           ros_distro: ${{ inputs.target_distro }}
           platforms: linux/amd64, linux/arm64
