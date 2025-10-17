@@ -31,26 +31,22 @@ using SendGoalOptions = rclcpp_action::Client<DockRobot>::SendGoalOptions;
 
 class SendToDockNode : public rclcpp::Node {
 public:
-  SendToDockNode();
+  SendToDockNode(const std::string &node_name = "send_to_dock_node",
+                 const rclcpp::NodeOptions &options = rclcpp::NodeOptions());
 
-private:
-  void
-  FeedbackCallback(GoalHandleDockRobot::SharedPtr,
-                   const std::shared_ptr<const DockRobot::Feedback> feedback);
-
+protected:
+  void HandleService(const SetBoolSrv::Request::SharedPtr request,
+                     SetBoolSrv::Response::SharedPtr response);
+  void FeedbackCallback(GoalHandleDockRobot::SharedPtr,
+                        const DockRobot::Feedback::ConstSharedPtr feedback);
   void ResultCallback(const GoalHandleDockRobot::WrappedResult &result);
-
   void GoalResponseCallback(GoalHandleDockRobot::SharedPtr goal_handle);
-
   DockRobot::Goal CreateGoalMsg();
   SendGoalOptions CreateGoalOptions();
 
-  void HandleService(const std::shared_ptr<SetBoolSrv::Request> request,
-                     std::shared_ptr<SetBoolSrv::Response> response);
-
+  GoalHandleDockRobot::SharedPtr active_goal_;
   rclcpp_action::Client<DockRobot>::SharedPtr dock_action_client_;
   rclcpp::Service<SetBoolSrv>::SharedPtr service_;
-  GoalHandleDockRobot::SharedPtr active_goal_;
   std::string dock_type_;
   bool navigate_to_staging_pose_;
   std::string dock_id_;

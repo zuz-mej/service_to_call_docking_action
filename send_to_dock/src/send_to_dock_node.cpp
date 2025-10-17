@@ -16,7 +16,9 @@
 
 namespace send_to_dock {
 
-SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
+SendToDockNode::SendToDockNode(const std::string &node_name,
+                               const rclcpp::NodeOptions &options)
+    : rclcpp::Node(node_name, options) {
 
   this->declare_parameter("dock_type", "charging_dock");
   this->declare_parameter("navigate_to_staging_pose", true);
@@ -39,7 +41,7 @@ SendToDockNode::SendToDockNode() : rclcpp::Node("send_to_dock_node") {
 
 void SendToDockNode::FeedbackCallback(
     GoalHandleDockRobot::SharedPtr,
-    const std::shared_ptr<const DockRobot::Feedback> feedback) {
+    const DockRobot::Feedback::ConstSharedPtr feedback) {
 
   RCLCPP_INFO_THROTTLE(this->get_logger(), *this->get_clock(), 1000,
                        "Feedback received: dock state = %d", feedback->state);
@@ -100,9 +102,8 @@ SendGoalOptions SendToDockNode::CreateGoalOptions() {
   return goal_options;
 }
 
-void SendToDockNode::HandleService(
-    const std::shared_ptr<SetBoolSrv::Request> request,
-    std::shared_ptr<SetBoolSrv::Response> response) {
+void SendToDockNode::HandleService(const SetBoolSrv::Request::SharedPtr request,
+                                   SetBoolSrv::Response::SharedPtr response) {
 
   if (!this->dock_action_client_->wait_for_action_server(
           std::chrono::seconds(2))) {
@@ -132,7 +133,7 @@ void SendToDockNode::HandleService(
   }
 
   if (active_goal_) {
-    dock_action_client_->async_cancel_goal(active_goal_);
+    dock_action_client_->async_cancel_all_goals();
     response->success = true;
     response->message = "Docking canceled.";
     RCLCPP_INFO(this->get_logger(), "Docking canceled.");
