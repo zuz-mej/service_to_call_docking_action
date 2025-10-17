@@ -11,10 +11,13 @@
   <author email="zuzanna.mejer@husarion.com">Zuzanna Mejer</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
   <depend>nav2_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
   <depend>std_srvs</depend>
+
+  <test_depend>ament_cmake_gtest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

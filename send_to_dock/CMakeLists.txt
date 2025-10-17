@@ -11,6 +11,18 @@ foreach(PACKAGE IN ITEMS ${PACKAGE_DEPENDENCIES})
   find_package(${PACKAGE} REQUIRED)
 endforeach()
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test_send_to_dock_node
+                  test/test_send_to_dock_node.cpp src/send_to_dock_node.cpp)
+  target_include_directories(
+    ${PROJECT_NAME}_test_send_to_dock_node
+    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+           $<INSTALL_INTERFACE:include>)
+  ament_target_dependencies(${PROJECT_NAME}_test_send_to_dock_node rclcpp
+                            rclcpp_action nav2_msgs std_srvs)
+endif()
+
 install(DIRECTORY config launch DESTINATION share/${PROJECT_NAME}/)
 
 add_executable(send_to_dock_node src/main.cpp src/send_to_dock_node.cpp)
